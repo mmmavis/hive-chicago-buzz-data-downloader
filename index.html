@@ -45,11 +45,38 @@
                          simpleSheet: true } )
       }
 
+      // just to match the existing format the app has been consuming
+      function jsonEntryFormatter(entry) {
+        var formattedEntry = {
+          "id": parseInt(entry['ID']),
+          "title": entry['Title'],
+          "description": entry['Description'],
+          "format": entry['Format'],
+          "moonshot": entry['Moonshot'],
+          "day": entry['Day'],
+          "scheduleblock": entry['Scheduleblock'],
+          "location": entry['Location'],
+          "facilitator1": entry['Facilitator 1']
+        };
+        if ( entry['Facilitator 2'] ) {
+          formattedEntry['facilitator2'] = entry['Facilitator 2'];
+        }
+        if ( entry['Facilitator 3'] ) {
+          formattedEntry['facilitator3'] = entry['Facilitator 3'];
+        }
+        formattedEntry['slackChannel'] = entry['Slack channel'];
+        return formattedEntry;
+      }
+
       function showInfo(data, tabletop) {
-        console.log(data);
+        // console.log(data);
+        var formattedData = data.map(function(entry) {
+          return jsonEntryFormatter(entry);
+        });
+        // console.log(formattedData);
         var a = document.createElement('a');
-        data = "text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data, null, 4));
-        a.href = 'data:' + data;
+        var fileContent = "text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(formattedData, null, 4));
+        a.href = 'data:' + fileContent;
         a.download = 'hive-chicago-buzz-data.json';
         a.innerHTML = 'Download JSON';
 
